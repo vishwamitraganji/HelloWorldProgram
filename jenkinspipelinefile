@@ -10,7 +10,7 @@ pipeline {
 			// start of running steps inside one stage
 			steps {
 				// invoke command
-				bat 'java Hello_World'
+				'java Hello_World'
 			}
 		}	
 	}
