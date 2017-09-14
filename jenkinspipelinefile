@@ -3,14 +3,14 @@ pipeline {
 	// where pipeline job will run
 	agent any
 	
-	// start of stages : build, test, deploy ...
+	// start of stages : run ...
 	stages {
-		// start of stage : build
-		stage('build') {
+		// start of stage : run
+		stage('run') {
 			// start of running steps inside one stage
 			steps {
-				// invoke command to build with maven
-				bat 'mvn clean install'
+				// invoke command
+				bat 'java Hello_World'
 			}
 		}	
 	}
