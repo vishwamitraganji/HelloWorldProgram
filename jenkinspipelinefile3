@@ -1,31 +1,51 @@
-pipeline {
-// where pipeline job will run
-agent {
-// force pipeline job to running on windows_agent
-label "windows_slave"
+stage 'Build'
+ 
+node {
+  try {
+    notifyBuild('STARTED')
+ 
+    bat 'runfile.bat'
+ 
+  } catch (e) {
+    // If there was an exception thrown, the build failed
+    currentBuild.result = "FAILED"
+    throw e
+  } finally {
+    // Success or failure, always send notifications
+    notifyBuild(currentBuild.result)
+  }
 }
-// start of stages : build, test, deploy ...
-stages {
-
-stage('build') {
-
-steps {
-
-bat 'runfile.bat'
-}
-}
-// start of deploy state
-stage('deploy') {
-// define step to run
-steps {
-//invoke command to stop tomcat service
-bat 'sc stop Tomcat8'
-bat 'ping 127.0.0.1 -n 6'
-// copy war file from build target to webapp Tomcat folder
-bat 'xcopy /y C:\\jenkins_slave\\workspace\\GOL_Pipeline\\gameoflife-web\\target\\gameoflife.war "C:\\Program Files\\Apache Software Foundation\\Tomcat 8.5\\webapps"'
-//invoke command to start tomcat service
-bat 'sc start Tomcat8'
-}
-}
-}
+ 
+def notifyBuild(String buildStatus = 'STARTED') {
+  // build status of null means successful
+  buildStatus =  buildStatus ?: 'SUCCESSFUL'
+ 
+  // Default values
+  def colorName = 'RED'
+  def colorCode = '#FF0000'
+  def subject = "${buildStatus}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+  def summary = "${subject} (${env.BUILD_URL})"
+  def details = """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+    <p>Check console output at "<a href="${env.BUILD_URL}">${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>"</p>"""
+ 
+  // Override default values based on build status
+  if (buildStatus == 'STARTED') {
+    color = 'YELLOW'
+    colorCode = '#FFFF00'
+  } else if (buildStatus == 'SUCCESSFUL') {
+    color = 'GREEN'
+    colorCode = '#00FF00'
+  } else {
+    color = 'RED'
+    colorCode = '#FF0000'
+  }
+ 
+  // Send notifications
+  slackSend (color: colorCode, message: summary)
+ 
+  emailext (
+      subject: subject,
+      body: details,
+      recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+    )
 }
