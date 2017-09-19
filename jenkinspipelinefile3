@@ -47,6 +47,6 @@ def notifyBuild(String buildStatus = 'STARTED') {
       subject: subject,
       body: details,
       recipientProviders: [[$class: 'RequesterRecipientProvider']]
-      // recipientProviders: [[$class: 'DevelopersRecipientProvider']]     
+      recipientProviders: [[$class: 'DevelopersRecipientProvider']]     
     )
 }
