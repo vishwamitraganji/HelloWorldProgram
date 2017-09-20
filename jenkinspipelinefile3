@@ -42,6 +42,5 @@ def notifyBuild(String buildStatus = 'STARTED') {
  
   // Send notifications
  slackSend (color: colorCode, message: summary)
- emailext (subject: subject, body: details, recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], to: 'vishwamitra.ganji@meeamitech.com')
- emailextrecipients([[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], to: 'vishwamitra.ganji@meeamitech.com')  
+ emailext (subject: subject, body: details, recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']], to: 'vishwamitra.ganji@yahoo.com')
 }
